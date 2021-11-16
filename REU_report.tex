@@ -206,13 +206,19 @@ Finally the \lstinline{_res_dict} data is inputted into the results DataFrame. T
 
 \subsubsection{Dihedral Analysis: Building an EnsembleAnalysis Efficiently}
 
-Additionally \texttt{DihedralAnalysis} was developed using the \texttt{EnsembleAnalysis} framework. \texttt{DihedralAnalysis} accepts a list of \texttt{EnsembleAtomGroup} objects and returns the dihedral angles over the course of the trajectory. It accomplishes this using the \lstinline{calc_dihedrals} function from MDAnalysis \cite{michaud-agrawal_mdanalysis_2011, gowers_mdanalysis_2016}. This function is written in Cython, which translates python code to C, making it signifiganlty faster than code written in python \cite{Mull2018}. 
+Additionally \texttt{DihedralAnalysis} was developed using the \texttt{EnsembleAnalysis} framework. \texttt{DihedralAnalysis} accepts a list of \texttt{EnsembleAtomGroup} objects and returns the dihedral angles over the course of the trajectory. It accomplishes this using the \lstinline{calc_dihedrals} function from MDAnalysis \cite{michaud-agrawal_mdanalysis_2011, gowers_mdanalysis_2016}. This function is written in Cython, which translates python code to C, making it significantly faster than code written in python \cite{Mull2018}. 
 
 \begin{figure}[h]
     \centering
 	\includegraphics[scale=0.5]{dihedral}
 	\caption{Example dihedral}
 	\label{fig:dihedral}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.5]{time}
+    \caption{Execution time of Iterating compared to Repackaging}
 \end{figure}
 
 Dihedral angles are calculated from the positions of four atoms, and describe the geometry of two portions of a molecule between a chemical bond. This gives a better understanding of the spatial relationship between groups in a molecule.   
