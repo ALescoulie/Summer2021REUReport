@@ -63,7 +63,7 @@ BAR overcomes the challenge of calculating partition functions by substituting t
 
 Thermodynamic integration (TI) obtains changes in free energy by defining a parameter $\lambda$ such that at $\lambda = 0 \; U = U_0$ and at $\lambda = 1 \; U = U_1$, where $U_1$ is the final state and $U_0$ is the initial state, and taking the partial derivative of $A$ with respect to $\lambda$ and integrating from 0 to 1 \cite{chipot_free_2007}.
 
-Both BAR and TI use $\lambda$ as a parameter for the extent of solute-solvent interactions \cite{chipot_free_2007}. This requires running a MD simulation for  each interaction at their respective $\lambda$ values \cite{lemkul_proteins_2019}. The process of initializing that number of simulations requires either the creation of a shell script running each or a tedious process of navigating directories, copying files, and running simulations. MDPOW makes this process easier with the user simply defining their settings and supplying a coordinate file, then running a few Python scripts.
+Both BAR and TI use $\lambda$ as a parameter for the extent of solute-solvent interactions \cite{chipot_free_2007}. This requires running a MD simulation for  each interaction at their respective $\lambda$ values \cite{lemkul_proteins_2019}. The process of initializing that number of simulations requires either the creation of a shell script running each or a tedious process of manually navigating directories, copying files, and running simulations. MDPOW makes this process easier with the user simply defining their settings and supplying a coordinate file, then running a few Python scripts.
 
 MDPOW is not without its limitations. Before release 0.7.0 it was incompatible with anything newer than Python 2.7 and had few features for analysis beyond running BAR and TI calculations. Both of these features were added over the course of the SPIDAL REU.
 
@@ -144,13 +144,13 @@ Using the \texttt{EnsembleAnalsis} framework two new methods were developed as p
 
 One of the analyses developed with the \texttt{EnsembleAnalysis} framework, \texttt{SolvationAnalysis}, which returns the number of solvents within the given distances, can also serve as an example of how to develop an analysis more generally. 
 
-\texttt{SolvationAnalysis} quantifies the number of solvent atom within a given distance of the solute. It accomplishes this thought calculating the distances between and each molecule using the \lstinline{capped_distance} function from MDAnalysis to get the indices for pairs which fall within the given cutoff \cite{michaud-agrawal_mdanalysis_2011, gowers_mdanalysis_2016}. 
+\texttt{SolvationAnalysis} quantifies the number of solvent atom within a given distance of the solute. It accomplishes this through calculating the distances between and each molecule using the \lstinline{capped_distance} function from MDAnalysis to get the indices for pairs which fall within the given cutoff \cite{michaud-agrawal_mdanalysis_2011, gowers_mdanalysis_2016}. 
 
-Building \texttt{EnsembleAnalysis} using inheritance, a consept from object oriented programming, simplifies the process of programming an analysis. Inheriting from a superclass gives a subclass the same methods and attributes, meaning that some methods common to all \texttt{EnsembleAnalysis} objects like \lstinline{run} can be retained; other methods the user can override to run their own analysis code. To develop \texttt{SolvationAnalysis}, only three methods were overridden in the subclass.  
+Building \texttt{EnsembleAnalysis} using inheritance, a concept from object oriented programming, simplifies the process of programming an analysis. Inheriting from a superclass gives a subclass the same methods and attributes, meaning that some methods common to all \texttt{EnsembleAnalysis} objects like \lstinline{run} can be retained; other methods the user can override to run their own analysis code. To develop \texttt{SolvationAnalysis}, only three methods were overridden in the subclass.  
  
 \begin{lstlisting}[language=Python]
 class SolvationAnalysis(EnsembleAnalysis):
-       def __init__(self, solute: EnsembleAtomGroup , solvent: EnsembleAtomGroup , distances: List[float]):
+       def __init__(self, solute: EnsembleAtomGroup, solvent: EnsembleAtomGroup, distances: List[float]):
         self.check_groups_from_common_ensemble([solute, solvent])
         super(SolvationAnalysis, self).__init__(solute.ensemble)
         self._solute = solute
@@ -192,13 +192,15 @@ The next method \lstinline{_prepare_ensemble} establishes data structures needed
 	\label{fig:solute}
 \end{wrapfigure}
 
-With data structures lined up, the actual number of solvent molecules can be counted with \lstinline{_single_frame}. This is done using the the capped distances function in MDAnalysis on line 18. This computes a distance array for the given group positions and returns distances in that range \cite{michaud-agrawal_mdanalysis_2011, gowers_mdanalysis_2016}. 
+With data structures lined up, the actual number of solvent molecules can be counted with \lstinline{_single_frame}. This is done using the fast capped distances function in MDAnalysis on line 18. This computes a distance array for the given group positions and returns distances in that range \cite{michaud-agrawal_mdanalysis_2011, gowers_mdanalysis_2016}.
 
 Finally the \lstinline{_res_dict} data is inputted into the results DataFrame. This gives data that is neatly organized and easy to generate figures from. The data obtained from \texttt{SolvationShell} gives an idea of how solvent molecules are distributed around the solute. This data can also be compared between different $\lambda$ values in a alchemical free energy simulation, offering incite into the role of different intermolecular interactions in the solvation process.
 
+This analysis was developed to determine arrangment of solvents around the solute. Figure two shows a rendering of the solute surounded by water molecules. \texttt{SolvationAnalysis} quantifies this counting the solvents within the given cuttoffs. The relationship between distance and number of solvent molecules for the solvent in figure 2 is shown in figure 3. The collected data sorted with Coulomb on the left and VDW on the right shows that the solvent molecules arrangment around the solvent is to some extent dependent on their interactions.
+
 \begin{figure}[h]
     \centering
-	\includegraphics{solv_plot}
+	\includegraphics[scale=0.5]{solv_plot}
 	\caption{Example solvation shell plot}
 	\label{fig:solvation}
 \end{figure}
@@ -210,15 +212,9 @@ Additionally \texttt{DihedralAnalysis} was developed using the \texttt{EnsembleA
 
 \begin{figure}[h]
     \centering
-	\includegraphics[scale=0.5]{dihedral}
+	\includegraphics[scale=0.5]{Dihedral}
 	\caption{Example dihedral}
 	\label{fig:dihedral}
-\end{figure}
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[scale=0.5]{time}
-    \caption{Execution time of Iterating compared to Repackaging}
 \end{figure}
 
 Dihedral angles are calculated from the positions of four atoms, and describe the geometry of two portions of a molecule between a chemical bond. This gives a better understanding of the spatial relationship between groups in a molecule.   
